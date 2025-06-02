@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hammer Strength Test Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 2vh;
+    }
+
+    h1 {
+      font-size: 5vw;
+      margin-bottom: 2vh;
+    }
+
+    .game-container {
+      position: relative;
+      width: 80vw;
+      max-width: 400px;
+      height: 80vw;
+      max-height: 400px;
+      margin: 0 auto;
+    }
+
+    .arc {
+      width: 100%;
+      height: 100%;
+      background: url('arc.png') no-repeat center center;
+      background-size: contain;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .angle-scale {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      pointer-events: none;
+    }
+
+    .angle-scale canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .needle-wrapper {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .needle {
+      width: 1vw;
+      height: 30vw;
+      background:red ;
+      transform-origin: bottom center;
+      transform: rotate(0deg);
+    }
+
+    .hammer {
+      width: 40vw;
+      margin-top: -5vw; 
+      z-index: -1;
+    }
+
+    .score {
+      font-size: 5vw;
+      margin-top: 3vh;
+    }
+
+    button {
+      padding: 1vh 2vw;
+      font-size: 4vw;
+      cursor: pointer;
+      margin: 1vh;
+      border-radius: 15px;
+      border: none;
+      background: #007BFF;
+      color: white;
+    }
+
+    @media (min-width: 600px) {
+      h1 { font-size: 2em; }
+      .score { font-size: 1.5em; }
+      button { font-size: 1em; padding: 10px 20px; }
+      .needle { width: 4px; height: 120px; }
+      .hammer { width: 10px; margin-top: -20px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Hammer Strength Test</h1>
+  <div class="game-container">
+    <div class="angle-scale">
+      <canvas id="angleCanvas" width="300" height="150"></canvas>
+    </div>
+    <div class="arc"></div>
+    <div class="needle-wrapper">
+      <div class="needle" id="needle"></div>
+      <img src="https://cdn.vectorstock.com/i/preview-1x/74/30/finger-hammer-game-machine-with-cartoon-vector-27007430.jpg"
+           class="hammer" alt="Hammer" />
+    </div>
+  </div>
+
+  <div>
+    <button onclick="startGame()">START</button>
+    <button onclick="stopNeedle()">STOP</button>
+  </div>
+
+  <div class="score" id="score"></div>
+
+  <script>
+    let angle = 0;
+    let direction = 1;
+    let speed = 0.8;
+    let animationFrame;
+    let running = false;
+
+    const needle = document.getElementById('needle');
+    const scoreDisplay = document.getElementById('score');
+    const canvas = document.getElementById('angleCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function drawAngleScale() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = "12px Arial";
+      ctx.fillStyle = "black";
+
+      const radius = 120;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height;
+
+      for (let deg = 0; deg <= 180; deg += 15) {
+        let actual = 180 - deg;
+        let rad = actual * Math.PI / 180;
+        let x = centerX + radius * Math.cos(rad);
+        let y = centerY - radius * Math.sin(rad);
+        ctx.fillText(deg + "°", x - 10, y );
+      }
+    }
+
+    function setNeedlePosition(deg) {
+      needle.style.transform = `rotate(${deg - 90}deg)`;
+    }
+
+    function animateNeedle() {
+      if (!running) return;
+
+      angle += speed * direction;
+      let diffFromCenter = Math.abs(90 - angle);
+      speed = 1.2 - (diffFromCenter / 90);
+
+      if (angle >= 180 || angle <= 0) {
+        direction *= -1;
+        angle = Math.max(0, Math.min(180, angle));
+      }
+
+      setNeedlePosition(angle);
+      animationFrame = requestAnimationFrame(animateNeedle);
+    }
+
+    function startGame() {
+      if (running) return;
+      angle = 0;
+      direction = 1;
+      speed = 0.8;
+      scoreDisplay.innerText = '';
+      setNeedlePosition(angle);
+      running = true;
+      animateNeedle();
+    }
+
+    function stopNeedle() {
+      if (!running) return;
+      running = false;
+      cancelAnimationFrame(animationFrame);
+      const deviation = Math.abs(angle - 90);
+      const score = Math.max(0, Math.floor(100 - deviation));
+      scoreDisplay.innerText = `You scored: ${score}`;
+    }
+
+    setNeedlePosition(0);
+    drawAngleScale();
+  </script>
+</body>
+</html>
