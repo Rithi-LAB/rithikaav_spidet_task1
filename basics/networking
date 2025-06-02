@@ -1,0 +1,73 @@
+103124088 – RITHIKAA V 
+SPIDER task 1 
+COMPUTER NETWORKING
+Analysis Questions: 
+
+1.	What types of traffic (HTTP, DNS, FTP, etc.) are present?
+Answer: The PCAP file includes the following types of traffic
+IPv6
+HTTP
+mDNS
+TCP
+IPv4
+DNS
+Ethernet
+Data-text content
+UDP
+
+2.	How many DNS queries were made in total?
+Answer: The file contains 358 (46.9% of 764 packets) of DNS queries which is obtained by dns.flags.response == 0
+
+3.	What types of DNS queries were made?
+Answer: A, AAAA, HTTPS, PTR
+TYPE      ---  	PURPOSE
+A         ---	Find IPv4 address of domain
+AAAA      ---	Find IPv6 address of domain
+HTTPS     ---	Provide service binding and parameter information for HTTPS clients
+PTR	      --- Reverse-lookup of IP to hostname (used often in logs and forensic analysis)
+
+4.	What is a Loopback Interface?
+Answer: 
+•	A loopback interface is a virtual network interface used by a computer to communicate with itself.
+•	This address doesn’t go out to any physical network. Instead, it loops back into the same device.
+•	The loopback interface is mainly used for testing, troubleshooting, or for applications that need to communicate internally on the same machine.
+
+5.	How many .txt files were requested? List their names.
+Answer:  
+    Number of .txt files requested: 3
+    Filenames:
+•	decoy2.txt
+•	encoded.txt
+•	decoy1.txt
+
+6.	One .txt file contains base64-encoded content. Identify and decode it. What does it contain?
+Answer: 
+       The .txt file that contains base64-encoded content: encoded.txt
+       Encoded base64 string: RkxBR3tzcGlkM3JfbmV0d29ya19tYXN0ZXJ9Cg==\n
+       Decoded string: FLAG{spid3r_network_master}
+       
+7.	 Was any attempt made to distract the analyst using decoy files? Explain.
+Answer: 
+       Yes, there was an attempt to distract the analyst using decoy files.
+These decoy files serve to waste analysis time and divert focus from the important flag file. This tactic is commonly used to make the investigation more challenging.
+Example: 
+Alongside the file containing the base64-encoded flag, multiple other .txt files were requested that contained irrelevant or meaningless data.
+       decoy2.txt contains “Nothing to see here.\n”
+       decoy1.txt contains “This is just a decoy.\n”
+       
+8.	Are there any known ports being used for uncommon services?
+Answer:
+     The capture includes both standard ports (like UDP 53 for DNS) and uncommon or less typical ports (like TCP 8000 for HTTP and UDP 5353 for mDNS.
+•	UDP port 53 is used for standard DNS queries and responses. This is expected.
+•	TCP port 8000 is used for HTTP traffic, but this is a non-standard port for HTTP, which normally uses port 80. The presence of HTTP traffic on port 8000 indicates that web services in this capture are running on an alternative port, which may be used for testing or custom applications.
+•	UDP port 5353 is used for mDNS (Multicast DNS), which is a local network service discovery protocol. This port is not used for typical DNS but enables devices to discover services like FTP, SMB, NFS, SFTP, and WebDAV on the local network. mDNS traffic is common on local networks but uncommon compared to standard DNS.
+
+9.	How many HTTP GET requests are visible in the capture?        
+Answer: 
+     There are 3 HTTP GET requests visible in the capture.
+     
+10.	What User-Agent was used to make the HTTP requests?
+Answer: 
+    The HTTP requests in the capture, and all of them use the same User-Agent.
+    User-Agent: curl/8.5.0
+    This shows that the HTTP requests were made using the curl command-line tool, version 8.5.0.
